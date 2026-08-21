@@ -1,0 +1,33 @@
+# Example network — a small, generic store/warehouse graph for the synthetic Northwind cassette.
+# One warehouse + four stores across three zones. Illustrative, not any real network. A real cassette
+# supplies its own roster/zones/roles; the machinery in peitho.network is identical for any of them.
+
+nodes = ["WH", "N1", "N2", "N3", "N4", "N5"]
+
+[zones]
+WH = "ZONE_A"
+N1 = "ZONE_A"
+N2 = "ZONE_B"
+N3 = "ZONE_B"
+N4 = "ZONE_C"
+N5 = "ZONE_C"
+
+# Fine controller roles. WH is the source; N1 is the flagship sell+triage node; N3 is sale-or-return;
+# N4 and N5 are ordinary satellite stores.
+[roles]
+WH = ["WAREHOUSE"]
+N1 = ["SELL", "TRIAGE"]
+N2 = ["SELL"]
+N3 = ["SOR"]
+N4 = ["STORE"]
+N5 = ["STORE"]
+
+[weights]
+source = "placeholder"     # the example ships no measured matrix; zone distances below are used
+intra_zone_min = 15
+same_store_min = 0
+
+[weights.zone_minutes]
+"ZONE_A|ZONE_B" = 40
+"ZONE_A|ZONE_C" = 70
+"ZONE_B|ZONE_C" = 50

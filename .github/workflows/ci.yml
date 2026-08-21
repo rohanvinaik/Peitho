@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+      - name: Ruff lint
+        run: uvx ruff check .
+      - name: Ruff format check
+        run: uvx ruff format --check .
+      - name: ty type check (pre-release, advisory — never gates the build)
+        run: uvx ty check src/peitho
+        continue-on-error: true
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+      - name: Pytest
+        # tests import peitho via pyproject pythonpath=["src"]; only external dep is pytest
+        run: uvx --with pytest pytest -q
+
+  sonar:
+    # CI-based analysis (NOT SonarCloud Automatic Analysis — that must be turned OFF in the project's
+    # Administration → Analysis Method, or the two conflict and the scan fails). This job honours
+    # sonar-project.properties (sources=src, the exclusions) and feeds Sonar our real coverage.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # full history so Sonar dates the new-code leak period correctly (no shallow-clone warning)
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+      - name: Pytest + Cobertura coverage
+        # coverage.xml is what sonar.python.coverage.reportPaths points at; branch coverage per pyproject
+        run: uvx --with pytest --with pytest-cov pytest -q --cov --cov-report=xml
+      - name: SonarQube Cloud scan
+        uses: SonarSource/sonarqube-scan-action@v7
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

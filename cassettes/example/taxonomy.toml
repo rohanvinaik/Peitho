@@ -1,0 +1,41 @@
+# Example taxonomy — a small, generic apparel/footwear vocabulary for the synthetic Northwind cassette.
+# This is illustrative, not any real company's category scheme. A real cassette supplies its own
+# richer relation (the deconvolution machinery in peitho.product is company-agnostic; only this data
+# differs). token -> [cluster, sub_category].
+
+clusters = ["Footwear", "Apparel", "Accessories", "Care"]
+placeholder = ["", "BLANK", "COLOR", "MISC"]
+
+[relation]
+"SHOES" = ["Footwear", "Shoes"]
+"SANDALS" = ["Footwear", "Sandals"]
+"BOOTS" = ["Footwear", "Boots"]
+"SNEAKERS" = ["Footwear", "Sneakers"]
+"SHIRT" = ["Apparel", "Shirt"]
+"PANTS" = ["Apparel", "Pants"]
+"JACKET" = ["Apparel", "Jacket"]
+"DRESS" = ["Apparel", "Dress"]
+"BAG" = ["Accessories", "Bag"]
+"BELT" = ["Accessories", "Belt"]
+"WALLET" = ["Accessories", "Wallet"]
+"HAT" = ["Accessories", "Hat"]
+"SOCKS" = ["Care", "Socks"]
+"POLISH" = ["Care", "Shoe Care"]
+
+[gender]
+"MENS" = "M"
+"WOMENS" = "F"
+"MEN" = "M"
+"WOMEN" = "F"
+
+[age]
+"KIDS" = "kids"
+"BOYS" = "kids"
+"GIRLS" = "kids"
+
+[spelling_fixes]
+"SHOOS" = "SHOES"
+"SNEEKERS" = "SNEAKERS"
+
+[prefix_map]
+# article-code prefix -> forced category token (none in the generic example)

@@ -1,0 +1,19 @@
+# Example cassette — a synthetic, generic multi-node retailer.
+#
+# This is the BUNDLED DEFAULT: with $PEITHO_CASSETTE unset, the agnostic core loads this cassette, so
+# a fresh checkout runs the decision core and a demo with no private data. It contains NO real company
+# data. To build a cassette for a real business, copy this directory and fill in network.toml,
+# taxonomy.toml, the adapter/ package, and branding/ — then point $PEITHO_CASSETTE at it.
+
+id = "example"
+brand = "Northwind Retail"
+currency = "USD"
+locale = "en-US"
+language = "en"              # report language register; the core default is English
+report_title = "Northwind — Daily Inventory Report"
+adapter = "adapter"          # the python package in this cassette that implements the SourceAdapter
+
+# Where this cassette's landed data lives. A real company build OMITS this (defaults to the shared
+# $PEITHO_ROOT/data, read in place). The self-contained example ships its own synthetic dataset, so it
+# points at a path relative to this cassette directory:
+data_root = "data"
