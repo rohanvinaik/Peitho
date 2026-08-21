@@ -2,9 +2,15 @@
 
 [![CI](https://github.com/rohanvinaik/Peitho/actions/workflows/ci.yml/badge.svg)](https://github.com/rohanvinaik/Peitho/actions/workflows/ci.yml)
 [![Quality gate](https://sonarcloud.io/api/project_badges/measure?project=rohanvinaik_Peitho&metric=alert_status&token=233dd3b2cc16d138e9bfeb0d460e2fa87960811c)](https://sonarcloud.io/summary/new_code?id=rohanvinaik_Peitho)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=rohanvinaik_Peitho&metric=coverage&token=233dd3b2cc16d138e9bfeb0d460e2fa87960811c)](https://sonarcloud.io/summary/new_code?id=rohanvinaik_Peitho)
+[![Maintainability](https://sonarcloud.io/api/project_badges/measure?project=rohanvinaik_Peitho&metric=sqale_rating&token=233dd3b2cc16d138e9bfeb0d460e2fa87960811c)](https://sonarcloud.io/summary/new_code?id=rohanvinaik_Peitho)
+[![Reliability](https://sonarcloud.io/api/project_badges/measure?project=rohanvinaik_Peitho&metric=reliability_rating&token=233dd3b2cc16d138e9bfeb0d460e2fa87960811c)](https://sonarcloud.io/summary/new_code?id=rohanvinaik_Peitho)
+[![Security](https://sonarcloud.io/api/project_badges/measure?project=rohanvinaik_Peitho&metric=security_rating&token=233dd3b2cc16d138e9bfeb0d460e2fa87960811c)](https://sonarcloud.io/summary/new_code?id=rohanvinaik_Peitho)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 [![type checked: ty](https://img.shields.io/badge/type%20checked-ty-261230?labelColor=grey)](https://github.com/astral-sh/ty)
 [![Behavior: mutation-pinned](https://img.shields.io/badge/behavior-mutation--pinned-8A2BE2)](#development)
+[![Zero runtime deps](https://img.shields.io/badge/runtime%20deps-0-brightgreen)](#why-this-instead-of-a-dashboard-a-subscription-or-an-llm)
+[![Python 3.12+](https://img.shields.io/badge/python-3.12%2B-blue)](https://www.python.org/downloads/)
 
 Peitho reads a multi-location retailer's own stock and sales and decides **what to move today, from where,
 and why** — and what to reorder when no internal move can cover a shortage. It is a deterministic decision
