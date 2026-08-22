@@ -105,8 +105,10 @@ def report(top: int = 12, min_purchased: float = 200.0) -> None:
     ranked = rank_suppliers(agg, baseline, min_purchased)
     dead = sum(1 for s in ranked if s.band == "DEAD_STOCK")
     left = sum(1 for s in ranked if s.band == "LEFT_UNSOLD")
+    # baseline is None in the documented pre-pull state (no supplier purchases landed) — don't format None
+    norm = f"{baseline:.0%}" if baseline is not None else "n/a (no supplier purchases landed)"
     print(
-        f"SUPPLIER lens — sell-through vs peer-median norm ({baseline:.0%}). {len(ranked)} suppliers "
+        f"SUPPLIER lens — sell-through vs peer-median norm ({norm}). {len(ranked)} suppliers "
         f"(purchased ≥ {min_purchased:.0f}); {dead} DEAD_STOCK (sitting), {left} LEFT_UNSOLD (gone). Worst {top}:"
     )
     for s in ranked[:top]:

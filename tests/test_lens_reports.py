@@ -64,6 +64,14 @@ def test_supplier_report_runs(monkeypatch, capsys):
     assert "SUPPLIER" in out and "LEFT_UNSOLD" in out
 
 
+def test_supplier_report_handles_the_empty_pre_pull_state(monkeypatch, capsys):
+    # the module's documented pre-pull state: no supplier purchases landed yet -> mine_supplier_baseline
+    # returns None. report() must NOT crash formatting a None baseline (f"{None:.0%}") — it prints its header.
+    monkeypatch.setattr(sup, "load_supplier_purchases", lambda: {})
+    sup.report()  # must not raise
+    assert "SUPPLIER" in capsys.readouterr().out
+
+
 def test_price_report_runs(monkeypatch, capsys):
     # A2@N8 is marked down far above N8's own (A1-set) markdown norm -> a flagged cleared item, so the report's
     # item loop runs, not just the store-grain header.
