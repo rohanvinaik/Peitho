@@ -194,9 +194,11 @@ def plan_transfers(
             if need <= 0:
                 continue
             sources = [
-                (s, spare_pool[s], min_cost.get((s, store), float("inf")))
+                (s, spare_pool[s], w)
                 for s in cells
-                if s != store and spare_pool[s] > 0
+                # only admissible arcs with a real travel cost (like plan_transfers_global) — an unreachable
+                # source (inf cost) must NOT consume the deficit; the unmet need surfaces as a reorder instead
+                if s != store and spare_pool[s] > 0 and (w := min_cost.get((s, store), float("inf"))) != float("inf")
             ]
             sources.sort(key=lambda t: (t[2], -t[1], t[0]))
             plan, unmet = allocate(need, sources)

@@ -57,11 +57,12 @@ def test_plan_transfers_surfaces_supplier_reorders_when_no_spare():
 
 def test_greedy_fills_from_spare_using_default_cost_matrix():
     # omit min_cost -> exercises the default OSRM/placeholder cost matrix; a spare store fills a short store,
-    # and a source holding NO spare is never offered.
+    # and a source holding NO spare is never offered. Nodes must be ON the network topology (spatial.NODES)
+    # for the default matrix to carry a finite arc between them — an off-network node has no route (reorder).
     grid = {
         ("A", "RED", "40"): {
-            "N8": Cell("N8", stock=0, sale_qty=9, recent_sales=5, nrv=1.0),  # short (RETAIL sink)
-            "N3": Cell("N3", stock=50, sale_qty=0, recent_sales=0, nrv=0.0),  # spare source
+            "N2": Cell("N2", stock=0, sale_qty=9, recent_sales=5, nrv=1.0),  # short (RETAIL sink), on-network
+            "N3": Cell("N3", stock=50, sale_qty=0, recent_sales=0, nrv=0.0),  # spare source, on-network
             "N1": Cell("N1", stock=0, sale_qty=0, recent_sales=0, nrv=0.0),  # no spare, no demand -> skipped
         }
     }
@@ -101,3 +102,17 @@ def test_greedy_shares_a_finite_source_across_competing_sinks():
     )
     assert sum(t.qty for t in transfers if t.source == "N3") == 5  # never 10 — a source can't over-ship its spare
     assert sum(r.qty for r in reorders) == 5  # the deficit N3 can't cover surfaces honestly as a reorder
+
+
+def test_greedy_reorders_when_the_only_spare_is_unreachable():
+    # spare exists but ONLY at a node with no known route to the deficit (inf cost). The greedy path must not
+    # ship across a non-existent arc (as plan_transfers_global doesn't) — it surfaces the supplier reorder.
+    grid = {
+        ("ART", "BLK", "40"): {
+            "N8": Cell("N8", stock=0, sale_qty=100, recent_sales=10, nrv=1000.0),  # selling, stocked out
+            "N3": Cell("N3", stock=50, sale_qty=0, recent_sales=0, nrv=1000.0),  # holds spare, but unreachable
+        }
+    }
+    transfers, reorders = plan_transfers(grid, target_cover_days=30.0, min_cost={})  # empty cost map → every arc inf
+    assert transfers == []  # nothing shipped across a non-existent route
+    assert any(r.store == "N8" and r.variant == ("ART", "BLK", "40") for r in reorders)  # reorder surfaced instead
