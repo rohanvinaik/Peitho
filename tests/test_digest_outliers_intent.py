@@ -37,3 +37,13 @@ def test_sale_outliers_finds_niche_overperformers_and_shelf_sitters():
     assert "DEAD" in lag_items  # real shelf sitting while its niche moves
     assert "RETURN" not in hot_items and "RETURN" not in lag_items  # the artifact is never a finding
     assert all(s.magnitude > 0 for s in hot + lag)  # magnitude is the |deviation| for ranking
+
+
+def test_sale_outliers_excludes_the_obvious_leader_in_a_small_seller_set():
+    # when few items sold, the top-decile percentile index used to land on the MAX, so the obvious ceiling
+    # excluded nothing and the single biggest seller leaked in as a 'hidden' hot. The largest volume leader
+    # must stay excluded regardless of how few items sold.
+    recs = [_rec(f"BASE{i}", "Sandals", 3, 3, 5) for i in range(5)]
+    recs.append(_rec("LEADER", "Sandals", 40, 50, 5))  # 50u = the obvious volume leader AND a rate over-performer
+    hot, _ = sale_outliers(recs, min_units=2, min_stock=2, min_group=2, min_hot_deviation=0.5, min_lag_deviation=0.5)
+    assert "LEADER" not in {s.fields["item"] for s in hot}  # the obvious volume leader is never a "hidden" hot

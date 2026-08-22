@@ -183,7 +183,10 @@ def sale_outliers(
     # the "obvious" ceiling: the operator already SEES the volume leaders on any top-N list, so a HIDDEN hot must
     # sit below them — the top decile of absolute units is "obvious", excluded from the hidden-hot surprise.
     sold_vals = sorted(u for r in records if (u := (r["movement"].get("sold_window") or 0)) > 0)
-    obvious_cap = sold_vals[int(len(sold_vals) * 0.90)] if sold_vals else 0
+    # cap the percentile index BELOW the max so the single largest seller is always excludable: int(k*0.9)
+    # coincides with the max index for k <= 10, which would leave the ceiling at max and exclude nothing.
+    k = len(sold_vals)
+    obvious_cap = sold_vals[min(int(k * 0.90), k - 2)] if k > 1 else 0
 
     hot: list = []
     laggards: list = []
