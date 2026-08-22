@@ -47,6 +47,14 @@ def test_resolve_token_deconvolves_across_both_lenses():
     assert _resolve("", "", "") == ""  # nothing informative → empty
 
 
+def test_resolve_token_prefers_the_longest_matching_prefix():
+    # a short code prefix that is itself a prefix of a longer, more specific one must NOT shadow it,
+    # regardless of dict insertion order — the LONGEST matching prefix wins.
+    nested = {"J": "jewelry", "JK": "jackets"}  # the short prefix is listed FIRST
+    assert resolve_token("", "", "JK1000", {}, {}, {}, frozenset(), nested) == "jackets"
+    assert resolve_token("", "", "J9001", {}, {}, {}, frozenset(), nested) == "jewelry"  # 'J' still owns its own codes
+
+
 def test_translate_category_full_deconvolution_and_abstention():
     # a men's wallet: category from section, gender from subsection, raw preserved
     r = translate_category("WALLET", "MENS", "TE-1", TAXO)

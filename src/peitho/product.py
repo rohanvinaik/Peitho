@@ -110,9 +110,9 @@ def resolve_token(
     first informative-but-unknown token (for provenance → unadjudicated). Returns '' when nothing
     resolves. Pure over the strings + the vocabulary maps."""
     code = (article_code or "").strip().upper()
-    for prefix, token in prefix_map.items():
+    for prefix in sorted(prefix_map, key=len, reverse=True):  # longest (most specific) prefix wins, not dict order
         if code.startswith(prefix):
-            return token
+            return prefix_map[prefix]
     fields = [(subsection or "").strip().upper(), (section or "").strip().upper()]
     for u in fields:  # a value that is a KNOWN category (not a gender/age token) wins
         if u and u not in gender and u not in age and u in relation:
