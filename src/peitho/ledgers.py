@@ -680,7 +680,9 @@ def _customer_ledger(structural: list, baselines: dict) -> dict:
         "domain": "customer",
         "summary": {
             "persons": len(structural),
-            "active": sum(1 for r in structural if r["rfm"]["frequency"] > 0),
+            # consume the COMPUTED segment (not a re-derived frequency>0 proxy) so active + INACTIVE
+            # partition the population by construction — a billed-but-undated node is INACTIVE, not active.
+            "active": sum(1 for r in structural if r["segment"] != "INACTIVE"),
             "households": len({r["household_id"] for r in structural if r["household_id"] is not None}),
             "segments": dict(Counter(r["segment"] for r in structural)),
             "rfm_baselines": baselines,
