@@ -37,13 +37,12 @@ def inventory_position(
 def price_position(cell: Cell, markdown_zero: float | None, tol: float) -> DimensionPosition:
     """Place a variant×store cell on the PRICE dimension: its **markdown depth (%)** vs the store's mined
     demand-weighted markdown baseline (the zero — `mine_store_discount_baselines`). Uses the SAME quantity
-    the baseline mines (`discount_depth`, ×100 to match its percentage scale — Serena-verified), so the
-    deviation is like-for-like. `+1` = MORE marked down than the store norm, `-1` = LESS, `0` = at the norm
-    OR no realized value (informational zero). `discount_depth` is the list-price-structural markdown,
-    matching the base."""
+    the baseline mines (`discount_depth`) — BOTH are already percentages (`disc / base * 100`), so the
+    deviation is like-for-like with no rescale. `+1` = MORE marked down than the store norm, `-1` = LESS,
+    `0` = at the norm OR no realized value (informational zero). `discount_depth` is the list-price-structural
+    markdown, matching the base."""
     depth = discount_depth(cell.discount_amount, cell.nrv)
-    depth_pct = depth * 100 if depth is not None else None
-    return deviation_position(PRICE, depth_pct, markdown_zero, tol, path=(cell.store,))
+    return deviation_position(PRICE, depth, markdown_zero, tol, path=(cell.store,))
 
 
 def spatial_position(

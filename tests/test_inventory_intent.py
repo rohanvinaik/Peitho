@@ -59,3 +59,19 @@ def test_velocity_by_horizon_widest_horizon_equals_flat_window_velocity():
 def test_band_rates_localises_mass_to_its_age_band():
     assert band_rates((3, 0, 0, 0, 0), window_days=137)[0] == 3 / 30  # recent band
     assert band_rates((0, 0, 0, 0, 3), window_days=137)[4] == 3 / 17  # >=121 tail over (137-120)
+
+
+def test_band_rates_out_of_window_tail_contributes_zero_at_default_window():
+    # WINDOW_DAYS=120 default: the >=121 band is OUTSIDE the window (span window_days-120 == 0), so its
+    # rate is 0 — NOT units/1-day. A degenerate 1-day span would make stale stock the highest-rate band.
+    assert band_rates((0, 0, 0, 0, 5))[4] == 0.0
+    assert band_rates((0, 0, 0, 0, 5), window_days=120)[4] == 0.0
+
+
+def test_recent_velocity_default_window_does_not_invert_fresh_and_fader():
+    # at the DEFAULT window the tail is out-of-window, so a fresh mover MUST outrank a fader — the same
+    # guarantee the tested 137-day window gives, now at the window every production caller actually uses.
+    fresh = recent_velocity((3, 0, 0, 0, 0))  # default window_days = WINDOW_DAYS (120)
+    fader = recent_velocity((0, 0, 0, 0, 3))  # all mass in the out-of-window >=121 tail
+    assert fader == 0.0
+    assert fresh > fader

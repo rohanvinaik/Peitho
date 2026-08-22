@@ -45,6 +45,13 @@ def test_price_position_signs_markdown_off_the_mined_zero_like_for_like():
     assert price_position(dead, markdown_zero=10.0, tol=0.1).sign == ORTHOGONAL
 
 
+def test_price_position_below_store_norm_reads_less_marked_down():
+    # a cell marked down LESS than its store's norm must read -1 (OPPOSE / 'less marked down'), not +1.
+    # discount_depth already returns a PERCENTAGE, matching the mined %-scale baseline — no rescale.
+    light = _cell(stock=5, sale_qty=1, nrv=95.0, discount_amount=5.0)  # 5% markdown depth vs a 30% store norm
+    assert price_position(light, markdown_zero=30.0, tol=0.1).sign == OPPOSE
+
+
 def test_spatial_position_signs_surplus_and_deficit_at_the_node():
     # selling cell, well stocked → spare above the coverage target → surplus → SUPPORT
     assert spatial_position(_cell(stock=200, sale_qty=50)).sign == SUPPORT

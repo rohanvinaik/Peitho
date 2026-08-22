@@ -108,12 +108,14 @@ RECENCY_WEIGHTS_DEFAULT = (0.40, 0.25, 0.20, 0.10, 0.05)
 
 def band_rates(sls_age, window_days: int = WINDOW_DAYS) -> tuple:
     """Per-band sells-per-day (NON-cumulative), recent→old: each 30-day sales-age bucket over its own 30-day
-    span, and the >=121 tail over (window_days − 120). The raw horizon signal. Pure over a 5-sequence +
-    scalar; a fader and a fresh mover are distinguishable here, which `velocity` alone cannot do."""
+    span, and the >=121 tail over (window_days − 120). When window_days ≤ 120 the tail span is ≤ 0 — the
+    >=121 band is OUT of window and contributes 0 (never a units/1-day inflation). The raw horizon signal.
+    Pure over a 5-sequence + scalar; a fader and a fresh mover are distinguishable here, which `velocity`
+    alone cannot do."""
     b = (tuple(int(x) for x in sls_age)[:5] + (0, 0, 0, 0, 0))[:5]
     tail = window_days - 120
-    spans = (30, 30, 30, 30, tail if tail > 0 else 1)
-    return tuple(b[i] / spans[i] for i in range(5))
+    spans = (30, 30, 30, 30, tail)
+    return tuple(b[i] / spans[i] if spans[i] > 0 else 0.0 for i in range(5))
 
 
 def velocity_by_horizon(sls_age, window_days: int = WINDOW_DAYS) -> dict:
